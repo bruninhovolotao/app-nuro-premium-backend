@@ -69,4 +69,12 @@ export class loginService {
         return { user: usuarioSemSenha, token}
 
     }
+
+    public async getByToken(authToken: string): Promise<Omit<User, "password"> | null>{
+        const user = await prismaClient.user.findFirst({
+            where:{ authToken },
+        });
+
+        return user;
+    }
 }
