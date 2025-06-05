@@ -1,0 +1,122 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String   @db.VarChar(50)
+  email     String   @db.VarChar(255)
+  password  String   @db.VarChar(255)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  authToken String?
+
+  @@map("user")
+}
+
+model Client {
+  id                   Int                    @id @default(autoincrement())
+  name                 String                 @db.VarChar(50)
+  phone                String                 @db.VarChar(255)
+  email                String?                @db.VarChar(255)
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+  FinancialTransaction FinancialTransaction[]
+
+  @@map("client")
+}
+
+model Service {
+  id                   Int                    @id @default(autoincrement())
+  name                 String                 @db.VarChar(50)
+  price                Decimal                @default(0.00) @db.Decimal(10, 2)
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+  FinancialTransaction FinancialTransaction[]
+  ServiceOnTransaction ServiceOnTransaction[]
+
+  @@map("service")
+}
+
+model Product {
+  id                   Int                    @id @default(autoincrement())
+  name                 String                 @db.VarChar(50)
+  price                Decimal                @default(0.00) @db.Decimal(10, 2)
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+  FinancialTransaction FinancialTransaction[]
+  ProductOnTransaction ProductOnTransaction[]
+
+  @@map("product")
+}
+
+model Professional {
+  id                   Int                    @id @default(autoincrement())
+  name                 String                 @db.VarChar(50)
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+  FinancialTransaction FinancialTransaction[]
+
+  @@map("professional")
+}
+
+model FinancialTransaction {
+  id            Int      @id @default(autoincrement())
+  date          DateTime @default(now())
+  totalAmount   Decimal  @default(0.00) @db.Decimal(10, 2)
+  paymentMethod String   @db.VarChar(50)
+  notes         String?  @db.VarChar(255)
+
+  clientId Int
+  client   Client @relation(fields: [clientId], references: [id])
+
+  professionalId Int
+  professional   Professional @relation(fields: [professionalId], references: [id])
+
+  services ServiceOnTransaction[] // Relacionamento N:N com Service
+  products ProductOnTransaction[] // Relacionamento N:N com Product
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Service   Service? @relation(fields: [serviceId], references: [id])
+  serviceId Int?
+  Product   Product? @relation(fields: [productId], references: [id])
+  productId Int?
+
+  @@map("financial_transaction")
+}
+
+model ServiceOnTransaction {
+  id                     Int @id @default(autoincrement())
+  financialTransactionId Int
+  serviceId              Int
+  quantity               Int @default(1)
+
+  financialTransaction FinancialTransaction @relation(fields: [financialTransactionId], references: [id])
+  service              Service              @relation(fields: [serviceId], references: [id])
+
+  @@map("service_on_transaction")
+}
+
+model ProductOnTransaction {
+  id                     Int @id @default(autoincrement())
+  financialTransactionId Int
+  productId              Int
+  quantity               Int @default(1)
+
+  financialTransaction FinancialTransaction @relation(fields: [financialTransactionId], references: [id])
+  product              Product              @relation(fields: [productId], references: [id])
+
+  @@map("product_on_transaction")
+}
