@@ -7,6 +7,7 @@ export class productRoutes{
         const router = Router();
         const controller = new productController();
 
+        router.get("/product", controller.list);
         router.post("/product", autenticarToken, controller.create);
 
         return router

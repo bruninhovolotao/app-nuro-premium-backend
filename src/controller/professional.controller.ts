@@ -18,4 +18,21 @@ export class professionalController{
             return onError(error, res);
         }
     }
+
+    public async list(req: Request, res: Response): Promise<void>{
+            try {
+            const service = new professionalService();
+    
+            const list = await service.list();
+    
+            res.status(200).json({
+                sucess: true,
+                message: 'Lista de produtos carregada com sucesso',
+                data: list
+            })
+            
+            } catch (error) {
+            onError(error, res)
+            }
+        }
 }

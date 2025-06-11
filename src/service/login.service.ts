@@ -9,16 +9,17 @@ type UserPartial = Omit<User, "password">
 
 export class loginService {
     public async signup(data: userDTO): Promise<UserPartial>{
-        const { name, email, password } = data;
+        const { name, email, username, password } = data;
 
         const existingUser = await prismaClient.user.findFirst({
             where: {
+                username: username,
                 email: email
             }
         })
 
         if(existingUser){
-            throw new Error("E-mail já cadastrado");
+            throw new Error("Usuário já cadastrado");
         }
 
         const passwordCripted = await bcrypt.hash(password, 10);
@@ -27,6 +28,7 @@ export class loginService {
             data:{
                 name,
                 email,
+                username,
                 password: passwordCripted
             }
         })
@@ -36,19 +38,14 @@ export class loginService {
     }
 
     public async login(data: loginDTO): Promise< {token: string, user: object} > {
-        const { email, password } = data
+        const { username, password } = data
 
         let user = await prismaClient.user.findFirst({
-            where:{
-                OR: [
-                    { email },
-                    { password }
-                    ]
-                }
+            where:{ username } 
         })
 
         if(!user){
-            throw new HTTPError(401, "E-mail ou Usuário não encontrado")
+            throw new HTTPError(401, "Usuário não encontrado")
         }
 
         const validPassword = await bcrypt.compare( password, user.password)

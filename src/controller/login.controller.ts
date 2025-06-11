@@ -21,10 +21,10 @@ export class loginController{
 
     public async login(req:Request, res: Response): Promise<void> {
         try {
-            const { email, password } = req.body;
+            const { username, password } = req.body;
 
             const service = new loginService();
-            const results = await service.login( { email, password })
+            const results = await service.login( { username, password })
 
             res.status(201).json({
                 sucess: true,

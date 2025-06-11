@@ -1,6 +1,6 @@
 import { Client } from "@prisma/client";
 import { prismaClient } from "../database/prisma.client";
-import { clientDTO } from "../dto/client.dto";
+import { clientDTO, ClientListDTO } from "../dto/client.dto";
 import { HTTPError } from "../utils/http.error";
 
 export class clientService {
@@ -9,12 +9,20 @@ export class clientService {
         const newClient = await prismaClient.client.create({
             data:{
                 name: dto.name,
-                email: dto.email,
-                phone: dto.phone
             }
         })
 
         return newClient;
+    }
+
+    public async list(): Promise<ClientListDTO[]> {
+      const clients = await prismaClient.client.findMany({
+        select: {
+          id: true,
+          name: true,
+        },
+      });
+      return clients;
     }
 
     public async update(id: number, data: clientDTO) {
@@ -31,9 +39,7 @@ export class clientService {
         const updatedClient = await prismaClient.client.update({
           where: { id },
           data: {
-            name: data.name ?? clientExists.name,
-            phone: data.phone ?? clientExists.phone,
-            email: data.email ?? clientExists.email
+            name: data.name ?? clientExists.name
           }
         });
     

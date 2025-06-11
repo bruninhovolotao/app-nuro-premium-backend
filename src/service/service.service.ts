@@ -1,6 +1,6 @@
 import { Service } from "@prisma/client";
 import { prismaClient } from "../database/prisma.client";
-import { serviceDTO } from "../dto/service.dto";
+import { serviceDTO, serviceListDTO } from "../dto/service.dto";
 import { Decimal } from "@prisma/client/runtime/library";
 
 export class serviceService {
@@ -26,5 +26,17 @@ export class serviceService {
         })
 
         return newService;
+    }
+
+    public async list(): Promise<serviceListDTO[]> {
+
+        const services = await prismaClient.service.findMany({
+            select: {
+              id: true,
+              name: true,
+              price: true,
+            },
+          });
+          return services;
     }
 }

@@ -3,8 +3,9 @@ export interface TransitionsDTO {
   paymentMethod: string;
   notes?: string;
   clientName: string;
+  serviceDate: Date;
   professionalName: string;
-  serviceName: string;
-  productName: string;
+  serviceName: string[];
+  productName: string[];
   }
   

@@ -18,4 +18,21 @@ export class serviceController{
             return onError(error, res);
         }
     }
+
+    public async list(req: Request, res: Response): Promise<void>{
+          try {
+            const service = new serviceService();
+    
+            const list = await service.list();
+    
+            res.status(200).json({
+              sucess: true,
+              message: 'Lista de clientes carregada com sucesso',
+              data: list
+            })
+            
+          } catch (error) {
+            onError(error, res)
+          }
+    }
 }

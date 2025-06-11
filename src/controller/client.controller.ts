@@ -19,6 +19,23 @@ export class clientController{
         }
     }
 
+    public async list(req: Request, res: Response): Promise<void>{
+      try {
+        const service = new clientService();
+
+        const list = await service.list();
+
+        res.status(200).json({
+          sucess: true,
+          message: 'Lista de clientes carregada com sucesso',
+          data: list
+        })
+        
+      } catch (error) {
+        onError(error, res)
+      }
+    }
+
     public async update(req: Request, res: Response): Promise<void> {
         try {
           const id = parseInt(req.params.id, 10);

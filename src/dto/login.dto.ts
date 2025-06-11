@@ -1,12 +1,13 @@
 export interface userDTO{
     name: string;
     email: string;
+    username: string;
     phone: string;
     password: string;
 }
 
 export interface loginDTO{
-    email: string;
+    username: string;
     password: string;
 }
 

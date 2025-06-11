@@ -7,6 +7,7 @@ export class professionalRoutes{
         const router = Router();
         const controller = new professionalController();
 
+        router.get("/professional", controller.list);
         router.post("/professional", autenticarToken, controller.create);
 
         return router

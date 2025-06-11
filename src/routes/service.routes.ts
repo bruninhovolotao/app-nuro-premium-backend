@@ -7,6 +7,7 @@ export class serviceRoutes{
         const router = Router();
         const controller = new serviceController();
 
+        router.get("/service", controller.list);
         router.post("/service", autenticarToken, controller.create);
 
         return router
