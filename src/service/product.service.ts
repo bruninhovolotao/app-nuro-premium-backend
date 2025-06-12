@@ -1,4 +1,4 @@
-import { Product } from "@prisma/client";
+import { Prisma, Product } from "@prisma/client";
 import { prismaClient } from "../database/prisma.client";
 import { productDTO, productListDTO } from "../dto/product.dto";
 import { Decimal } from "@prisma/client/runtime/library";
@@ -16,12 +16,13 @@ export class productService {
             throw new Error("Serviço já cadastrado");
         }
 
-        const priceDecimal = new Decimal(dto.price);
+        // const priceDecimal = new Decimal(dto.price);
+        const priceDecimal = new Prisma.Decimal(dto.price);
 
         const newProduct = await prismaClient.product.create({
             data:{
                 name: dto.name,
-                price: priceDecimal
+                price: dto.price
             }
         })
 
