@@ -25,6 +25,61 @@ export class clientService {
       return clients;
     }
 
+    public async ClientReport(clientId: number, startDate?: string, endDate?: string) {
+      const whereClause: any = {
+        clientId,
+      };
+
+      if (startDate && endDate) {
+        whereClause.serviceDate = {
+          gte: new Date(startDate),
+          lte: new Date(endDate),
+        };
+      }
+
+      const transactions = await prismaClient.financialTransaction.findMany({
+        where: whereClause,
+        orderBy: {
+          serviceDate: "desc",
+        },
+        include: {
+          client: true,
+          professional: true,
+          services: {
+            include: {
+              service: true,
+            },
+          },
+          products: {
+            include: {
+              product: true,
+            },
+          },
+        },
+      });
+
+      return transactions.map((t) => ({
+        id: t.id,
+        dataAtendimento: t.serviceDate,
+        metodoPagamento: t.paymentMethod,
+        valorTotal: t.totalAmount,
+        profissional: t.professional.name,
+        observacoes: t.notes,
+        servicos: t.services.map((s) => ({
+          nome: s.service.name,
+          quantidade: s.quantity,
+          valorUnitario: s.service.price,
+          total: s.service.price.mul(s.quantity),
+        })),
+        produtos: t.products.map((p) => ({
+          nome: p.product.name,
+          quantidade: p.quantity,
+          valorUnitario: p.product.price,
+          total: p.product.price.mul(p.quantity),
+        })),
+      }));
+    }
+
     public async update(id: number, data: clientDTO) {
         
         const clientExists = await prismaClient.client.findUnique({
@@ -44,7 +99,7 @@ export class clientService {
         });
     
         return updatedClient;
-      }
+    }
 
     public async delete(id: number) {
       const clientExists = await prismaClient.client.findUnique({
