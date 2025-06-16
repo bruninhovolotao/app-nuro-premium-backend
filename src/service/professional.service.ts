@@ -93,11 +93,11 @@ export class professionalService {
       
         const commissionRateService = Number(professional.serviceCommission) / 100;
         const commissionServiceValue = totalServiceValue * commissionRateService;
-        const valueToReceiveServices = totalServiceValue - commissionServiceValue;
+        const valueToReceiveServices = commissionServiceValue;
       
         const commissionRateProduct = Number(professional.productCommission) / 100;
         const commissionProductValue = totalProductValue * commissionRateProduct;
-        const valueToReceiveProduct = totalProductValue - commissionProductValue;
+        const valueToReceiveProduct = commissionProductValue;
 
         const valueToReceiveTotal = valueToReceiveServices + valueToReceiveProduct;
       
