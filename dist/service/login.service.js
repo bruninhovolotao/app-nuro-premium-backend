@@ -26,28 +26,61 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.loginService = void 0;
 const prisma_client_1 = require("../database/prisma.client");
 const bcrypt_1 = __importDefault(require("bcrypt"));
+const crypto_1 = require("crypto");
+const http_error_1 = require("../utils/http.error");
 class loginService {
-    signup(data) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { name, email, password } = data;
-            const existingUser = yield prisma_client_1.prismaClient.User.findFirst({
+    signup(_a) {
+        return __awaiter(this, arguments, void 0, function* ({ name, email, username, password, tipo }) {
+            const existingUser = yield prisma_client_1.prismaClient.user.findFirst({
                 where: {
+                    username: username,
                     email: email
                 }
             });
             if (existingUser) {
-                throw new Error("E-mail já cadastrado");
+                throw new Error("Usuário já cadastrado");
             }
             const passwordCripted = yield bcrypt_1.default.hash(password, 10);
-            const newUser = yield prisma_client_1.prismaClient.User.create({
+            const newUser = yield prisma_client_1.prismaClient.user.create({
                 data: {
                     name,
                     email,
-                    password: passwordCripted
+                    username,
+                    password: passwordCripted,
                 }
             });
             const { password: _ } = newUser, userPartial = __rest(newUser, ["password"]);
             return userPartial;
+        });
+    }
+    login(data) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { username, password } = data;
+            let user = yield prisma_client_1.prismaClient.user.findFirst({
+                where: { username }
+            });
+            if (!user) {
+                throw new http_error_1.HTTPError(401, "Usuário não encontrado");
+            }
+            const validPassword = yield bcrypt_1.default.compare(password, user.password);
+            if (!validPassword) {
+                throw new http_error_1.HTTPError(401, "Senha inválida");
+            }
+            const token = (0, crypto_1.randomUUID)();
+            user = yield prisma_client_1.prismaClient.user.update({
+                where: { id: user.id },
+                data: { authToken: token },
+            });
+            const { password: _ } = user, usuarioSemSenha = __rest(user, ["password"]);
+            return { user: usuarioSemSenha, token };
+        });
+    }
+    getByToken(authToken) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = yield prisma_client_1.prismaClient.user.findFirst({
+                where: { authToken },
+            });
+            return user;
         });
     }
 }

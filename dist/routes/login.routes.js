@@ -7,7 +7,7 @@ class loginRoutes {
     static bind() {
         const router = (0, express_1.Router)();
         const controller = new login_controller_1.loginController();
-        router.post("/sign-up", controller.signup);
+        router.post("/signup", controller.signup);
         router.post("/login", controller.login);
         return router;
     }
