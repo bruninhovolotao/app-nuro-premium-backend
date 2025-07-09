@@ -22,6 +22,7 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   authToken String?
+  role      Role     @default(USER)
 
   @@map("user")
 }
@@ -143,4 +144,9 @@ model ProductOnTransaction {
   product              Product              @relation(fields: [productId], references: [id])
 
   @@map("product_on_transaction")
+}
+
+enum Role {
+  USER
+  ADMIN
 }

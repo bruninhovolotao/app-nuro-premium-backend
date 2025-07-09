@@ -9,6 +9,7 @@ declare module "express-serve-static-core" {
       id: number;
       name: string;
       email: string;
+      role: string
     };
   }
 }
@@ -38,7 +39,7 @@ export async function autenticarToken(req: Request, res: Response, next: NextFun
       id: userFound.id,
       name: userFound.name,
       email: userFound.email,
-
+      role: userFound.role
     };
 
     return next();

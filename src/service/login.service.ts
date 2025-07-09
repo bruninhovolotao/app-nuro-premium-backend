@@ -29,7 +29,8 @@ export class loginService {
                 name,
                 email,
                 username,
-                password: passwordCripted
+                password: passwordCripted,
+                role: 'USER'
             }
         })
 
