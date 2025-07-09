@@ -9,7 +9,7 @@ type UserPartial = Omit<User, "password">
 
 export class loginService {
     public async signup(data: userDTO): Promise<UserPartial>{
-        const { name, email, username, password } = data;
+        const { name, email, username, password, role } = data;
 
         const existingUser = await prismaClient.user.findFirst({
             where: {

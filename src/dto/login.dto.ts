@@ -4,6 +4,7 @@ export interface userDTO{
     username: string;
     phone: string;
     password: string;
+    role: string
 }
 
 export interface loginDTO{
