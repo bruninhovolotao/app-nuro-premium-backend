@@ -22,7 +22,7 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   authToken String?
-  role      Role     @default(USER)
+  tipo      Tipo     @default(USER)
 
   @@map("user")
 }
@@ -146,7 +146,7 @@ model ProductOnTransaction {
   @@map("product_on_transaction")
 }
 
-enum Role {
+enum Tipo {
   USER
   ADMIN
 }

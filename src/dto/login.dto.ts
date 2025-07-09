@@ -4,7 +4,7 @@ export interface userDTO{
     username: string;
     phone: string;
     password: string;
-    role: string
+    tipo: 'USER'| 'ADMIN';
 }
 
 export interface loginDTO{

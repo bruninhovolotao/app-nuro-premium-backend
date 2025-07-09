@@ -1,5 +1,5 @@
 import { prismaClient } from "../database/prisma.client";
-import { User, Role } from "@prisma/client"
+import { User, Tipo  } from "@prisma/client"
 import { loginDTO, userDTO } from "../dto/login.dto";
 import bcrypt from "bcrypt";
 import { randomUUID } from "crypto";
@@ -8,8 +8,7 @@ import { HTTPError } from "../utils/http.error";
 type UserPartial = Omit<User, "password">
 
 export class loginService {
-    public async signup(data: userDTO): Promise<UserPartial>{
-        const { name, email, username, password, role } = data;
+    public async signup({name, email, username, password, tipo}: userDTO): Promise<UserPartial>{
 
         const existingUser = await prismaClient.user.findFirst({
             where: {
@@ -30,7 +29,6 @@ export class loginService {
                 email,
                 username,
                 password: passwordCripted,
-                role: Role.USER
             }
         })
 
