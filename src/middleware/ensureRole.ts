@@ -8,7 +8,7 @@ export function ensureTipo(req: Request, res: Response, next: NextFunction){
   try {
     const user  = req.user
     
-    if( user?.role === Tipo.USER ){
+    if( user?.tipo === Tipo.USER ){
       throw new HTTPError(403, "Acesso negado para esse recurso")
     }
 
