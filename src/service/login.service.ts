@@ -1,5 +1,5 @@
 import { prismaClient } from "../database/prisma.client";
-import { User } from "@prisma/client"
+import { User, Role } from "@prisma/client"
 import { loginDTO, userDTO } from "../dto/login.dto";
 import bcrypt from "bcrypt";
 import { randomUUID } from "crypto";
@@ -30,7 +30,7 @@ export class loginService {
                 email,
                 username,
                 password: passwordCripted,
-                role: 'USER'
+                role: Role.USER
             }
         })
 
