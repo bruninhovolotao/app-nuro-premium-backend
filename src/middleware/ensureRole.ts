@@ -3,12 +3,12 @@ import { onError } from "../utils/on-error";
 import { HTTPError } from "../utils/http.error";
 import { Role } from '@prisma/client'
 
-export async function ensureRole(req: Request, res: Response, next: NextFunction){
+export function ensureRole(req: Request, res: Response, next: NextFunction){
 
   try {
-    const role  = req.user
+    const user  = req.user
     
-    if( role?.role === Role.USER ){
+    if( user?.role === Role.USER ){
       throw new HTTPError(403, "Acesso negado para esse recurso")
     }
 
