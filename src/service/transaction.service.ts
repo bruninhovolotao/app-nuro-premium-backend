@@ -13,33 +13,45 @@ export class transactionService {
       throw new HTTPError(401, "Cliente não informado");
     }
 
-    // Validação do serviço (pode ter mais de um)
-    let services: { id: number; price: Prisma.Decimal }[] = [];
-    if (dto.serviceName && dto.serviceName.length > 0) {
-      for (const serviceName of dto.serviceName) {
-        const service = await prismaClient.service.findFirst({
-          where: { name: serviceName },
+    // Validação dos serviços
+    let services: { name: string; price: Prisma.Decimal, quantity: number }[] = [];
+
+    if (!dto.services || dto.services.length === 0) {
+      throw new HTTPError(400, "É necessário informar pelo menos um serviço.");
+    }
+
+    for (const service of dto.services) {
+      if (!service.name || service.name.trim() === "") {
+        throw new HTTPError(400, "O nome do serviço não pode estar em branco.");
+      }
+
+      if (typeof service.price !== "number" || service.price <= 0) {
+        throw new HTTPError(400, `Preço inválido para o serviço: ${service.name}`);
+      }
+
+      services.push({
+        name: service.name.trim(),
+        price: service.price,
+        quantity: service.quantity
+      });
+    }
+
+    // Validação dos produtos
+    let products: { name: string; price: Prisma.Decimal, quantity: number }[] = [];
+
+    if (dto.products && dto.products.length > 0) {
+      for (const product of dto.products) {
+        if (typeof product.name !== "string" || product.name.trim() === "") continue;
+        if (typeof product.price !== "number" || product.price < 0) continue;
+
+        products.push({
+          name: product.name.trim(),
+          price: product.price,
+          quantity: product.quantity
         });
-        if (!service) {
-          throw new HTTPError(401, `Serviço não encontrado: ${serviceName}`);
-        }
-        services.push({ id: service.id, price: service.price });
       }
     }
 
-    // Validação dos produtos (pode ter mais de um)
-    let products: { id: number; price: Prisma.Decimal }[] = [];
-    if (dto.productName && dto.productName.length > 0) {
-      for (const productName of dto.productName) {
-        const product = await prismaClient.product.findFirst({
-          where: { name: productName },
-        });
-        if (!product) {
-          throw new HTTPError(401, `Produto não encontrado: ${productName}`);
-        }
-        products.push({ id: product.id, price: product.price });
-      }
-    }
 
     // Validação do profissional
     const professional = await prismaClient.professional.findFirst({
@@ -58,30 +70,31 @@ export class transactionService {
     const transaction = await prismaClient.financialTransaction.create({
       data: {
         date: new Date(),
-        serviceDate: dto.serviceDate,
         totalAmount,
         paymentMethod: dto.paymentMethod,
         notes: dto.notes,
         clientId: client.id,
         professionalId: professional.id,
-        services: {
-          create: services.map((p) => ({
-            serviceId: p.id,
-            quantity: 1 // ou ajuste conforme necessário
+        serviceItems: {
+          create: services.map((s) => ({
+            name: s.name,
+            price: s.price,
+            quantity: s.quantity
           }))
-        },
-        products: {
+      },
+        productItems: {
           create: products.map((p) => ({
-            productId: p.id,
-            quantity: 1 // ou ajuste conforme necessário
+            name: p.name,
+            price: p.price,
+            quantity: p.quantity
           }))
         }
       },
       include: {
         client: true,
         professional: true,
-        services: { include: { service: true } },
-        products: { include: { product: true } }
+        serviceItems: true,
+        productItems: true
       }
     });
 

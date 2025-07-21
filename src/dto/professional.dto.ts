@@ -2,8 +2,8 @@ import { Decimal } from "@prisma/client/runtime/library";
 
 export interface professionalDTO{
     name: string;
-    productCommission: number,
-    serviceCommission: number
+    productCommission: Decimal,
+    serviceCommission: Decimal
 }
 
 export interface professionalListDTO{

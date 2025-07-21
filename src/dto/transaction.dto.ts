@@ -1,3 +1,5 @@
+import { Decimal } from "@prisma/client/runtime/library";
+
 export interface TransitionsDTO {
   totalAmount: string;
   paymentMethod: string;
@@ -5,7 +7,20 @@ export interface TransitionsDTO {
   clientName: string;
   serviceDate: Date;
   professionalName: string;
-  serviceName: string[];
-  productName: string[];
+
+  services: TransactionServiceDTO[];
+  products?: TransactionProductDTO[];
   }
+
+  export interface TransactionServiceDTO {
+  name: string;
+  price: Decimal;
+  quantity: number
+}
+
+export interface TransactionProductDTO {
+  name: string;
+  price: Decimal;
+  quantity: number
+}
   

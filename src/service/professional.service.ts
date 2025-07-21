@@ -1,4 +1,4 @@
-import { Prisma, Professional, Service } from "@prisma/client";
+import { Prisma, Professional } from "@prisma/client";
 import { prismaClient } from "../database/prisma.client";
 import { professionalDTO, professionalListDTO, ProfessionalReport } from "../dto/professional.dto";
 import { HTTPError } from "../utils/http.error";
@@ -32,7 +32,7 @@ export class professionalService {
                 id: true,
                 name: true,
                 serviceCommission: true,
-                productCommission: true,
+                productCommission: true, 
             },
             });
             return services;
@@ -62,12 +62,8 @@ export class professionalService {
             ...dateFilter,
           },
           include: {
-            services: {
-              include: { service: true }
-            },
-            products: {
-              include: { product: true }
-            }
+            serviceItems: true,
+            productItems: true
           }
         });
       
@@ -78,15 +74,15 @@ export class professionalService {
         let totalProductValue = 0;
       
         transactions.forEach((transaction) => {
-          transaction.services.forEach((s) => {
-            const price = Number(s.service.price) || 0;
-            totalServices += s.quantity;
+          transaction.serviceItems.forEach((s) => {
+            const price = Number(s.price) || 0;
+            totalServices += s.quantity || 1;
             totalServiceValue += s.quantity * price;
           });
       
-          transaction.products.forEach((p) => {
-            const price = Number(p.product.price) || 0;
-            totalProducts += p.quantity;
+          transaction.productItems.forEach((p) => {
+            const price = Number(p.price) || 0;
+            totalProducts += p.quantity || 1;
             totalProductValue += p.quantity * price;
           });
         });
@@ -110,10 +106,10 @@ export class professionalService {
             start: startDate || null,
             end: endDate || null,
           },
-          service: {
+          serviceItems: {
             QuantityService: totalServices,
           },
-          product: {
+          productItems: {
             QuantityProduct: totalProducts,
           },
           total: {
