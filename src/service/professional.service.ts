@@ -41,8 +41,8 @@ export class professionalService {
     public async professionalReport(professionalId: number, startDate?: string, endDate?: string): Promise<ProfessionalReport> {
         const dateFilter = startDate && endDate ? {
           date: {
-            gte: new Date(startDate),
-            lte: new Date(endDate),
+            gte: new Date(`${startDate}T00:00:00.000Z`),
+            lte: new Date(`${endDate}T23:59:59.999Z`)
           }
         } : {};
       

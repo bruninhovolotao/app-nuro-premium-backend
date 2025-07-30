@@ -15,4 +15,4 @@ export interface ClientUpdateDTO {
     name?: string;
     phone?: string;
     email?: string;
-  }
+}
