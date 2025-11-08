@@ -6,7 +6,6 @@ export interface TransitionsDTO {
   notes?: string;
   clientName: string;
   serviceDate: Date;
-  professionalName: string;
 
   services: TransactionServiceDTO[];
   products?: TransactionProductDTO[];
@@ -15,12 +14,14 @@ export interface TransitionsDTO {
   export interface TransactionServiceDTO {
   name: string;
   price: Decimal;
-  quantity: number
+  quantity: number;
+  professionalName: string;
 }
 
 export interface TransactionProductDTO {
   name: string;
   price: Decimal;
-  quantity: number
+  quantity: number;
+  professionalName: string;
 }
   

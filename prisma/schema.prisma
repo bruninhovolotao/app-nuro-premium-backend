@@ -38,13 +38,14 @@ model Client {
 }
 
 model Professional {
-  id                   Int                    @id @default(autoincrement())
-  name                 String                 @db.VarChar(50)
-  serviceCommission    Decimal                @default(0.00) @db.Decimal(5, 2) // 0.00 a 100.00 (%)
-  productCommission    Decimal                @default(0.00) @db.Decimal(5, 2) // 0.00 a 100.00 (%)
-  createdAt            DateTime               @default(now())
-  updatedAt            DateTime               @updatedAt
-  FinancialTransaction FinancialTransaction[]
+  id                Int           @id @default(autoincrement())
+  name              String        @db.VarChar(50)
+  serviceCommission Decimal       @default(0.00) @db.Decimal(5, 2) // 0.00 a 100.00 (%)
+  productCommission Decimal       @default(0.00) @db.Decimal(5, 2) // 0.00 a 100.00 (%)
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  serviceItems      ServiceItem[]
+  productItems      ProductItem[]
 
   @@map("professional")
 }
@@ -59,11 +60,8 @@ model FinancialTransaction {
   clientId Int
   client   Client @relation(fields: [clientId], references: [id])
 
-  professionalId Int
-  professional   Professional @relation(fields: [professionalId], references: [id])
-
-  serviceItems ServiceItem[] // Serviços utilizados nessa transação
-  productItems ProductItem[] // Produtos utilizados nessa transação
+  serviceItems ServiceItem[]
+  productItems ProductItem[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -72,27 +70,25 @@ model FinancialTransaction {
 }
 
 model ServiceItem {
-  id       Int     @id @default(autoincrement())
-  name     String  @db.VarChar(50)
-  price    Decimal @db.Decimal(10, 2)
-  quantity Int     @default(1)
-
-  transactionId Int
-  transaction   FinancialTransaction @relation(fields: [transactionId], references: [id])
-
-  @@map("service_item")
+  id                     Int                  @id @default(autoincrement())
+  name                   String
+  price                  Decimal              @db.Decimal(10, 2)
+  quantity               Int      @default(1) 
+  professionalId         Int
+  professional           Professional         @relation(fields: [professionalId], references: [id])
+  financialTransactionId Int
+  financialTransaction   FinancialTransaction @relation(fields: [financialTransactionId], references: [id])
 }
 
 model ProductItem {
-  id       Int     @id @default(autoincrement())
-  name     String  @db.VarChar(50)
-  price    Decimal @db.Decimal(10, 2)
-  quantity Int     @default(1)
-
-  transactionId Int
-  transaction   FinancialTransaction @relation(fields: [transactionId], references: [id])
-
-  @@map("product_item")
+  id                     Int                  @id @default(autoincrement())
+  name                   String
+  price                  Decimal              @db.Decimal(10, 2)
+  quantity               Int      @default(1) 
+  professionalId         Int
+  professional           Professional         @relation(fields: [professionalId], references: [id])
+  financialTransactionId Int
+  financialTransaction   FinancialTransaction @relation(fields: [financialTransactionId], references: [id])
 }
 
 enum Tipo {
