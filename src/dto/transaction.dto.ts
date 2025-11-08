@@ -5,7 +5,6 @@ export interface TransitionsDTO {
   paymentMethod: string;
   notes?: string;
   clientName: string;
-  serviceDate: Date;
 
   services: TransactionServiceDTO[];
   products?: TransactionProductDTO[];

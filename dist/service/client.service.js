@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.clientService = void 0;
 const prisma_client_1 = require("../database/prisma.client");
 const http_error_1 = require("../utils/http.error");
+const library_1 = require("@prisma/client/runtime/library");
 class clientService {
     create(dto) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -40,49 +41,57 @@ class clientService {
                 clientId,
             };
             if (startDate && endDate) {
-                whereClause.serviceDate = {
-                    gte: new Date(startDate),
-                    lte: new Date(endDate),
+                whereClause.date = {
+                    gte: new Date(`${startDate}T00:00:00.000Z`),
+                    lte: new Date(`${endDate}T23:59:59.999Z`),
                 };
             }
             const transactions = yield prisma_client_1.prismaClient.financialTransaction.findMany({
                 where: whereClause,
                 orderBy: {
-                    serviceDate: "desc",
+                    date: "desc",
                 },
                 include: {
                     client: true,
                     professional: true,
-                    services: {
+                    serviceItems: {
                         include: {
-                            service: true,
+                            transaction: {
+                                include: {
+                                    serviceItems: true
+                                }
+                            },
                         },
                     },
-                    products: {
+                    productItems: {
                         include: {
-                            product: true,
+                            transaction: {
+                                include: {
+                                    productItems: true,
+                                }
+                            },
                         },
                     },
-                },
+                }
             });
             return transactions.map((t) => ({
                 id: t.id,
-                dataAtendimento: t.serviceDate,
+                dataAtendimento: t.date,
                 metodoPagamento: t.paymentMethod,
                 valorTotal: t.totalAmount,
                 profissional: t.professional.name,
                 observacoes: t.notes,
-                servicos: t.services.map((s) => ({
-                    nome: s.service.name,
+                servicos: t.serviceItems.map((s) => ({
+                    nome: s.name,
                     quantidade: s.quantity,
-                    valorUnitario: s.service.price,
-                    total: s.service.price.mul(s.quantity),
+                    valorUnitario: s.price,
+                    total: new library_1.Decimal(s.price).mul(s.quantity),
                 })),
-                produtos: t.products.map((p) => ({
-                    nome: p.product.name,
+                produtos: t.productItems.map((p) => ({
+                    nome: p.name,
                     quantidade: p.quantity,
-                    valorUnitario: p.product.price,
-                    total: p.product.price.mul(p.quantity),
+                    valorUnitario: p.price,
+                    total: new library_1.Decimal(p.price).mul(p.quantity),
                 })),
             }));
         });

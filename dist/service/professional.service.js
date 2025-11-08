@@ -50,8 +50,8 @@ class professionalService {
         return __awaiter(this, void 0, void 0, function* () {
             const dateFilter = startDate && endDate ? {
                 date: {
-                    gte: new Date(startDate),
-                    lte: new Date(endDate),
+                    gte: new Date(`${startDate}T00:00:00.000Z`),
+                    lte: new Date(`${endDate}T23:59:59.999Z`)
                 }
             } : {};
             // Busca o profissional
@@ -65,12 +65,8 @@ class professionalService {
             const transactions = yield prisma_client_1.prismaClient.financialTransaction.findMany({
                 where: Object.assign({ professionalId }, dateFilter),
                 include: {
-                    services: {
-                        include: { service: true }
-                    },
-                    products: {
-                        include: { product: true }
-                    }
+                    serviceItems: true,
+                    productItems: true
                 }
             });
             // Agrupamento e cálculos
@@ -79,14 +75,14 @@ class professionalService {
             let totalProducts = 0;
             let totalProductValue = 0;
             transactions.forEach((transaction) => {
-                transaction.services.forEach((s) => {
-                    const price = Number(s.service.price) || 0;
-                    totalServices += s.quantity;
+                transaction.serviceItems.forEach((s) => {
+                    const price = Number(s.price) || 0;
+                    totalServices += s.quantity || 1;
                     totalServiceValue += s.quantity * price;
                 });
-                transaction.products.forEach((p) => {
-                    const price = Number(p.product.price) || 0;
-                    totalProducts += p.quantity;
+                transaction.productItems.forEach((p) => {
+                    const price = Number(p.price) || 0;
+                    totalProducts += p.quantity || 1;
                     totalProductValue += p.quantity * price;
                 });
             });
@@ -106,10 +102,10 @@ class professionalService {
                     start: startDate || null,
                     end: endDate || null,
                 },
-                service: {
+                serviceItems: {
                     QuantityService: totalServices,
                 },
-                product: {
+                productItems: {
                     QuantityProduct: totalProducts,
                 },
                 total: {

@@ -21,40 +21,57 @@ class transactionService {
                 where: { name: dto.clientName },
             });
             if (!client) {
-                throw new http_error_1.HTTPError(401, "Cliente não informado");
+                throw new http_error_1.HTTPError(400, "Cliente não informado");
             }
-            // Validação do serviço (pode ter mais de um)
+            // Validação dos serviços
             let services = [];
-            if (dto.serviceName && dto.serviceName.length > 0) {
-                for (const serviceName of dto.serviceName) {
-                    const service = yield prisma_client_1.prismaClient.service.findFirst({
-                        where: { name: serviceName },
-                    });
-                    if (!service) {
-                        throw new http_error_1.HTTPError(401, `Serviço não encontrado: ${serviceName}`);
-                    }
-                    services.push({ id: service.id, price: service.price });
-                }
+            if (!dto.services || dto.services.length === 0) {
+                throw new http_error_1.HTTPError(400, "É necessário informar pelo menos um serviço.");
             }
-            // Validação dos produtos (pode ter mais de um)
+            for (const service of dto.services) {
+                if (!service.name || service.name.trim() === "") {
+                    throw new http_error_1.HTTPError(400, "O nome do serviço não pode estar em branco.");
+                }
+                if (typeof service.price !== "number" || service.price <= 0) {
+                    throw new http_error_1.HTTPError(400, `Preço inválido para o serviço: ${service.name}`);
+                }
+                if (!service.professionalName || service.professionalName.trim() === "") {
+                    throw new http_error_1.HTTPError(400, `Profissional não informado para o produto: ${service.name}`);
+                }
+                const professional = yield prisma_client_1.prismaClient.professional.findFirst({
+                    where: { name: service.professionalName },
+                });
+                if (!professional) {
+                    throw new http_error_1.HTTPError(400, "Profissional não informado para o serviço");
+                }
+                services.push({
+                    name: service.name.trim(),
+                    price: service.price,
+                    quantity: service.quantity,
+                    professionalId: professional.id
+                });
+            }
+            // Validação dos produtos
             let products = [];
-            if (dto.productName && dto.productName.length > 0) {
-                for (const productName of dto.productName) {
-                    const product = yield prisma_client_1.prismaClient.product.findFirst({
-                        where: { name: productName },
+            if (dto.products && dto.products.length > 0) {
+                for (const product of dto.products) {
+                    if (typeof product.name !== "string" || product.name.trim() === "")
+                        continue;
+                    if (typeof product.price !== "number" || product.price < 0)
+                        continue;
+                    const professional = yield prisma_client_1.prismaClient.professional.findFirst({
+                        where: { name: product.professionalName },
                     });
-                    if (!product) {
-                        throw new http_error_1.HTTPError(401, `Produto não encontrado: ${productName}`);
+                    if (!professional) {
+                        throw new http_error_1.HTTPError(401, "Profissional não informado para o produto");
                     }
-                    products.push({ id: product.id, price: product.price });
+                    products.push({
+                        name: product.name.trim(),
+                        price: product.price,
+                        quantity: product.quantity,
+                        professionalId: professional.id
+                    });
                 }
-            }
-            // Validação do profissional
-            const professional = yield prisma_client_1.prismaClient.professional.findFirst({
-                where: { name: dto.professionalName },
-            });
-            if (!professional) {
-                throw new http_error_1.HTTPError(401, "Profissional não informado");
             }
             // Cálculo do totalAmount (serviço + soma dos produtos)
             const servicesTotal = services.reduce((acc, p) => acc.add(p.price), new client_1.Prisma.Decimal(0));
@@ -64,30 +81,31 @@ class transactionService {
             const transaction = yield prisma_client_1.prismaClient.financialTransaction.create({
                 data: {
                     date: new Date(),
-                    serviceDate: dto.serviceDate,
                     totalAmount,
                     paymentMethod: dto.paymentMethod,
                     notes: dto.notes,
                     clientId: client.id,
-                    professionalId: professional.id,
-                    services: {
-                        create: services.map((p) => ({
-                            serviceId: p.id,
-                            quantity: 1 // ou ajuste conforme necessário
+                    serviceItems: {
+                        create: services.map((s) => ({
+                            name: s.name,
+                            price: s.price,
+                            quantity: s.quantity,
+                            professionalId: s.professionalId,
                         }))
                     },
-                    products: {
+                    productItems: {
                         create: products.map((p) => ({
-                            productId: p.id,
-                            quantity: 1 // ou ajuste conforme necessário
+                            name: p.name,
+                            price: p.price,
+                            quantity: p.quantity,
+                            professionalId: p.professionalId,
                         }))
                     }
                 },
                 include: {
                     client: true,
-                    professional: true,
-                    services: { include: { service: true } },
-                    products: { include: { product: true } }
+                    serviceItems: true,
+                    productItems: true
                 }
             });
             return transaction;
