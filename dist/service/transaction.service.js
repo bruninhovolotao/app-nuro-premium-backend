@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.transactionService = void 0;
+const client_1 = require("@prisma/client");
 const prisma_client_1 = require("../database/prisma.client");
 const http_error_1 = require("../utils/http.error");
 class transactionService {
@@ -73,9 +74,9 @@ class transactionService {
                 }
             }
             // Cálculo do totalAmount (serviço + soma dos produtos)
-            const servicesTotal = services.reduce((acc, p) => acc.add(p.price), new Prisma.Decimal(0));
-            const productsTotal = products.reduce((acc, p) => acc.add(p.price), new Prisma.Decimal(0));
-            const totalAmount = new Prisma.Decimal(servicesTotal).add(productsTotal);
+            const servicesTotal = services.reduce((acc, p) => acc.add(p.price), new client_1.Prisma.Decimal(0));
+            const productsTotal = products.reduce((acc, p) => acc.add(p.price), new client_1.Prisma.Decimal(0));
+            const totalAmount = new client_1.Prisma.Decimal(servicesTotal).add(productsTotal);
             // Criação da transação financeira
             const transaction = yield prisma_client_1.prismaClient.financialTransaction.create({
                 data: {
