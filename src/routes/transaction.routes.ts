@@ -8,7 +8,7 @@ export class transactionRoutes{
         const router = Router();
         const controller = new transitionsController();
 
-        router.post("/transactions", autenticarToken, ensureTipo, controller.create);
+        router.post("/transactions", autenticarToken, controller.create);
 
         return router
     }
