@@ -1,4 +1,4 @@
-import { FinancialTransaction, Prisma, PrismaClient } from "@prisma/client";
+import { FinancialTransaction, Prisma } from "@prisma/client";
 import { prismaClient } from "../database/prisma.client";
 import { TransitionsDTO } from "../dto/transaction.dto";
 import { HTTPError } from "../utils/http.error";
