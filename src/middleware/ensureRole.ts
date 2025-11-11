@@ -12,9 +12,9 @@ export function ensureTipo(req: Request, res: Response, next: NextFunction){
       throw new HTTPError(500, "Tipo enum não está definido.");
     }
 
-    if (!user) {
-      throw new HTTPError(401, "Usuário não autenticado");
-    }
+    // if (!user) {
+    //   throw new HTTPError(401, "Usuário não autenticado");
+    // }
     
     if( user?.tipo === Tipo.USER ){
       throw new HTTPError(403, "Acesso negado para esse recurso")

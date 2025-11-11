@@ -38,7 +38,7 @@ export class professionalService {
             return services;
     }
 
-    public async professionalReport(professionalId: number, startDate?: string, endDate?: string): Promise<ProfessionalReport> {
+    public async professionalReport(professionalId: number, startDate?: string, endDate?: string) {
         const dateFilter = startDate && endDate ? {
           date: {
             gte: new Date(`${startDate}T00:00:00.000Z`),
@@ -55,15 +55,18 @@ export class professionalService {
           throw new Error('Profissional não encontrado');
         }
       
-        // Busca todas as transações financeiras no período
+        // Busca todas as transações de serviços financeiras no período
         const transactions = await prismaClient.financialTransaction.findMany({
           where: {
-            professionalId,
             ...dateFilter,
+            OR: [
+                  { serviceItems: { some: { professionalId } } },
+                  { productItems: { some: { professionalId } } }
+                ]
           },
           include: {
-            serviceItems: true,
-            productItems: true
+                serviceItems: true,
+                productItems: true
           }
         });
       
@@ -73,19 +76,26 @@ export class professionalService {
         let totalProducts = 0;
         let totalProductValue = 0;
       
-        transactions.forEach((transaction) => {
-          transaction.serviceItems.forEach((s) => {
+        // Percorre todas as transações e soma os itens do profissional
+        for (const transaction of transactions) {
+          // Serviços
+          const serviceItems = transaction.serviceItems.filter(s => s.professionalId === professionalId);
+          for (const s of serviceItems) {
             const price = Number(s.price) || 0;
-            totalServices += s.quantity || 1;
-            totalServiceValue += s.quantity * price;
-          });
-      
-          transaction.productItems.forEach((p) => {
+            const qty = s.quantity || 1;
+            totalServices += qty;
+            totalServiceValue += qty * price;
+          }
+
+          // Produtos
+          const productItems = transaction.productItems.filter(p => p.professionalId === professionalId);
+          for (const p of productItems) {
             const price = Number(p.price) || 0;
-            totalProducts += p.quantity || 1;
-            totalProductValue += p.quantity * price;
-          });
-        });
+            const qty = p.quantity || 1;
+            totalProducts += qty;
+            totalProductValue += qty * price;
+          }
+        }
       
         const commissionRateService = Number(professional.serviceCommission) / 100;
         const commissionServiceValue = totalServiceValue * commissionRateService;
