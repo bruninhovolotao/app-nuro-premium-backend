@@ -27,6 +27,6 @@ app.use(professionalRoutes.bind())
 app.use(transactionRoutes.bind())
 app.use(salesRoutes.bind())
 
-app.listen(3000, () => {
-    console.log('Servidor rodando na porta 3000')
-})
+app.listen(3000, '0.0.0.0', () => {
+    console.log('Servidor rodando na porta 3000');
+});
