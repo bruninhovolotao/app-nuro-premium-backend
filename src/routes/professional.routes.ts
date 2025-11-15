@@ -10,7 +10,7 @@ export class professionalRoutes{
 
         router.get("/professional", controller.list);
         router.get("/professional/search", controller.professionalSearch);
-        router.get("/report/professional/:id", ensureTipo, controller.professionalReport);
+        router.get("/report/professional/:id", controller.professionalReport);
         router.post("/professional", autenticarToken, controller.create);
 
         return router

@@ -10,7 +10,7 @@ export class clientRoutes{
 
         router.get("/client", controller.list);
         router.get("/client/search", controller.ClientSearch);
-        router.get("/report/client/:id", ensureTipo, controller.ClientReport);
+        router.get("/report/client/:id", controller.ClientReport);
         router.post("/client", autenticarToken, controller.create);
         router.put("/client/:id", autenticarToken, controller.update);
         router.delete("/client/:id", autenticarToken, controller.delete);
