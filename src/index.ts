@@ -2,11 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import { loginRoutes } from './routes/login.routes';
 import { clientRoutes } from './routes/client.routes';
-import { serviceRoutes } from './routes/service.routes';
-import { productRoutes } from './routes/product.routes';
 import { professionalRoutes } from './routes/professional.routes';
 import { transactionRoutes } from './routes/transaction.routes';
-import { salesRoutes } from './routes/sales.routes';
 
 const app = express();
 
@@ -21,11 +18,8 @@ app.get('/', (req, res) => {
 
 app.use(loginRoutes.bind())
 app.use(clientRoutes.bind())
-app.use(serviceRoutes.bind())
-app.use(productRoutes.bind())
 app.use(professionalRoutes.bind())
 app.use(transactionRoutes.bind())
-app.use(salesRoutes.bind())
 
 app.listen(3000, 'localhost', () => {
     console.log('Servidor rodando na porta 3000');

@@ -53,23 +53,14 @@ class clientService {
                 },
                 include: {
                     client: true,
-                    professional: true,
                     serviceItems: {
                         include: {
-                            transaction: {
-                                include: {
-                                    serviceItems: true
-                                }
-                            },
-                        },
+                            professional: true
+                        }
                     },
                     productItems: {
                         include: {
-                            transaction: {
-                                include: {
-                                    productItems: true,
-                                }
-                            },
+                            professional: true
                         },
                     },
                 }
@@ -79,18 +70,19 @@ class clientService {
                 dataAtendimento: t.date,
                 metodoPagamento: t.paymentMethod,
                 valorTotal: t.totalAmount,
-                profissional: t.professional.name,
                 observacoes: t.notes,
                 servicos: t.serviceItems.map((s) => ({
                     nome: s.name,
                     quantidade: s.quantity,
                     valorUnitario: s.price,
+                    profissional: s.professional.name,
                     total: new library_1.Decimal(s.price).mul(s.quantity),
                 })),
                 produtos: t.productItems.map((p) => ({
                     nome: p.name,
                     quantidade: p.quantity,
                     valorUnitario: p.price,
+                    profissional: p.professional.name,
                     total: new library_1.Decimal(p.price).mul(p.quantity),
                 })),
             }));
