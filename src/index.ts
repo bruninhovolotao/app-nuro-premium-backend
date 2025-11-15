@@ -21,6 +21,6 @@ app.use(clientRoutes.bind())
 app.use(professionalRoutes.bind())
 app.use(transactionRoutes.bind())
 
-app.listen(3000, 'localhost', () => {
+app.listen(3000, () => {
     console.log('Servidor rodando na porta 3000');
 });
