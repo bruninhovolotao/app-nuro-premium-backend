@@ -9,6 +9,7 @@ const login_routes_1 = require("./routes/login.routes");
 const client_routes_1 = require("./routes/client.routes");
 const professional_routes_1 = require("./routes/professional.routes");
 const transaction_routes_1 = require("./routes/transaction.routes");
+const invoicing_routes_1 = require("./routes/invoicing.routes");
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
@@ -20,6 +21,7 @@ app.use(login_routes_1.loginRoutes.bind());
 app.use(client_routes_1.clientRoutes.bind());
 app.use(professional_routes_1.professionalRoutes.bind());
 app.use(transaction_routes_1.transactionRoutes.bind());
-app.listen(3000, 'localhost', () => {
+app.use(invoicing_routes_1.InvoicingRoutes.bind());
+app.listen(3000, () => {
     console.log('Servidor rodando na porta 3000');
 });

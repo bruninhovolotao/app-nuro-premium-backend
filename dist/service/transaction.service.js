@@ -80,7 +80,7 @@ class transactionService {
             // Criação da transação financeira
             const transaction = yield prisma_client_1.prismaClient.financialTransaction.create({
                 data: {
-                    date: new Date(),
+                    date: new Date(dto.transactionDate),
                     totalAmount,
                     paymentMethod: dto.paymentMethod,
                     notes: dto.notes,
