@@ -53,7 +53,7 @@ class professionalController {
                 const results = yield prisma_client_1.prismaClient.professional.findMany({
                     where: {
                         name: {
-                            contains: String(name),
+                            contains: String(name || ""),
                             mode: 'insensitive', // ignora maiúsculas/minúsculas
                         },
                     },
@@ -65,9 +65,16 @@ class professionalController {
                         name: 'asc',
                     },
                 });
+                if (results.length === 0) {
+                    res.status(404).json({
+                        success: false,
+                        message: "Nenhum profissional encontrado com esse nome.",
+                        data: [],
+                    });
+                }
                 res.status(200).json({
                     sucess: true,
-                    message: 'Profissional encontrado com sucesso',
+                    message: 'Profissional encontrado com sucesso!',
                     data: results
                 });
             }
@@ -83,6 +90,24 @@ class professionalController {
             try {
                 const service = new professional_service_1.professionalService();
                 const report = yield service.professionalReport(professionalId, startDate, endDate);
+                res.status(200).json({
+                    sucess: true,
+                    message: 'Dados do Profissional carregados com sucesso',
+                    data: report
+                });
+            }
+            catch (error) {
+                (0, on_error_1.onError)(error, res);
+            }
+        });
+    }
+    professionalInvoicing(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const professionalId = Number(req.params.id);
+            const { startDate, endDate } = req.query;
+            try {
+                const service = new professional_service_1.professionalService();
+                const report = yield service.professionalInvoicing(professionalId, startDate, endDate);
                 res.status(200).json({
                     sucess: true,
                     message: 'Dados do Profissional carregados com sucesso',
