@@ -44,7 +44,7 @@ export class professionalController{
         const results = await prismaClient.professional.findMany({
             where: {
             name: {
-                contains: String(name),
+                contains: String(name || ""),
                 mode: 'insensitive', // ignora maiúsculas/minúsculas
             },
             },
@@ -57,9 +57,17 @@ export class professionalController{
             },
         });
 
+        if (results.length === 0) {
+            res.status(404).json({
+                success: false,
+                message: "Nenhum profissional encontrado com esse nome.",
+                data: [],
+            });
+        }
+
         res.status(200).json({
             sucess: true,
-            message: 'Profissional encontrado com sucesso',
+            message: 'Profissional encontrado com sucesso!',
             data: results
         })
         } catch (error) {
@@ -86,5 +94,26 @@ export class professionalController{
           } catch (error) {
             onError(error, res)
           }
-        }
+    }
+
+    public async professionalInvoicing(req: Request, res: Response): Promise<void>{
+    
+          const professionalId = Number(req.params.id);
+          const { startDate, endDate } = req.query;
+    
+          try {
+            const service = new professionalService();
+    
+            const report = await service.professionalInvoicing(professionalId, startDate as string, endDate as string);
+            
+            res.status(200).json({
+              sucess: true,
+              message: 'Dados do Profissional carregados com sucesso',
+              data: report
+            })
+            
+          } catch (error) {
+            onError(error, res)
+          }
+    }
 }

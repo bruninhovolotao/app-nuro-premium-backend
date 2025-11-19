@@ -138,6 +138,102 @@ export class professionalService {
           
         };
     }
+    public async professionalInvoicing(professionalId: number, startDate?: string, endDate?: string) {
+        const dateFilter = startDate && endDate ? {
+          date: {
+            gte: new Date(`${startDate}T00:00:00.000Z`),
+            lte: new Date(`${endDate}T23:59:59.999Z`)
+          }
+        } : {};
       
+        // Busca o profissional
+        const professional = await prismaClient.professional.findUnique({
+          where: { id: professionalId },
+          
+        });
+      
+        if (!professional) {
+          throw new Error('Profissional não encontrado');
+        }
+      
+        const transactions = await prismaClient.financialTransaction.findMany({
+          where: {
+            ...dateFilter,
+            OR: [
+                  { serviceItems: { some: { professionalId } } },
+                  { productItems: { some: { professionalId } } }
+                ]
+          },
+          select:{
+            client: {
+              select:{ name: true }
+            },
+            date: true,
+            serviceItems: {
+              where:{ professionalId },
+              select:{
+                name: true,
+                price: true,
+                quantity: true
+              }
+            },
+            productItems: {
+              where:{ professionalId },
+              select:{
+                name: true,
+                price: true,
+                quantity: true
+              }
+            },
+          },
+          orderBy: {date: "desc"}
+        });
 
+        if (transactions.length === 0) {
+            throw new Error("Nenhum registro encontrado para o período selecionado.");
+        }
+
+        // Agrupamento e cálculos
+        let totalServices = 0;
+        let totalServiceValue = 0;
+        let totalProducts = 0;
+        let totalProductValue = 0;
+      
+        // Percorre todas as transações e soma os itens do profissional
+        for (const transaction of transactions) {
+          // Serviços
+          const serviceItems = transaction.serviceItems.filter(s => (professional.id));
+          for (const s of serviceItems) {
+            const price = Number(s.price) || 0;
+            const qty = s.quantity || 1;
+            totalServices += qty;
+            totalServiceValue += qty * price;
+          }
+
+          // Produtos
+          const productItems = transaction.productItems.filter(p => (professional.id));
+          for (const p of productItems) {
+            const price = Number(p.price) || 0;
+            const qty = p.quantity || 1;
+            totalProducts += qty;
+            totalProductValue += qty * price;
+          }
+        }
+
+        return {
+          quantidadeRegistros: transactions.length,
+          professional: {
+            id: professional.id,
+            name: professional.name,
+          },
+          periodo: {
+            start: startDate || null,
+            end: endDate || null,
+          },
+          transactions,
+          totalServiceValue,
+          totalProductValue,
+        };
+    }
+    
 }
