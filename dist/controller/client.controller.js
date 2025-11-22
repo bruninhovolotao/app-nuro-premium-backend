@@ -113,7 +113,7 @@ class clientController {
                 const updatedClient = yield service.update(id, data);
                 res.status(201).json({
                     sucess: true,
-                    message: 'Cliente cadastrado com sucesso',
+                    message: 'Cliente atualizado com sucesso',
                     data: updatedClient
                 });
             }

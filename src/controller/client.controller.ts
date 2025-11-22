@@ -110,7 +110,7 @@ export class clientController{
     
           res.status(201).json({
             sucess: true,
-            message: 'Cliente cadastrado com sucesso',
+            message: 'Cliente atualizado com sucesso',
             data: updatedClient
         })
 
