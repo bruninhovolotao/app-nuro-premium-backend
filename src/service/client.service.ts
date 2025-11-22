@@ -126,16 +126,41 @@ export class clientService {
     }
 
     public async delete(id: number) {
+      
       const clientExists = await prismaClient.client.findUnique({
-        where: { id }
-      })
+          where: { id }
+        });
+    
+        if (!clientExists) {
+          throw new HTTPError(404, "Cliente não encontrado.");
+        }
 
-      if(!clientExists){
-        throw new HTTPError(404, "Cliente não encontrado");
-      }
+        const transactions = await prismaClient.financialTransaction.findMany({
+          where: { clientId: id },
+          select: { id: true }
+        });
 
-      await prismaClient.client.delete({
-        where: { id }
+      await prismaClient.$transaction(async (i) =>{
+        for(const t of transactions){
+          
+          await i.serviceItem.deleteMany({
+            where:{ financialTransactionId: t.id }
+          })
+
+          await i.productItem.deleteMany({
+            where:{ financialTransactionId: t.id }
+          })
+
+          await i.financialTransaction.deleteMany({
+            where: { id: t.id }
+          })
+
+        }
+
+        await i.client.delete({
+            where:{ id }
+        })
+
       })
 
     }
