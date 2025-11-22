@@ -112,11 +112,28 @@ class clientService {
                 where: { id }
             });
             if (!clientExists) {
-                throw new http_error_1.HTTPError(404, "Cliente não encontrado");
+                throw new http_error_1.HTTPError(404, "Cliente não encontrado.");
             }
-            yield prisma_client_1.prismaClient.client.delete({
-                where: { id }
+            const transactions = yield prisma_client_1.prismaClient.financialTransaction.findMany({
+                where: { clientId: id },
+                select: { id: true }
             });
+            yield prisma_client_1.prismaClient.$transaction((i) => __awaiter(this, void 0, void 0, function* () {
+                for (const t of transactions) {
+                    yield i.serviceItem.deleteMany({
+                        where: { financialTransactionId: t.id }
+                    });
+                    yield i.productItem.deleteMany({
+                        where: { financialTransactionId: t.id }
+                    });
+                    yield i.financialTransaction.deleteMany({
+                        where: { id: t.id }
+                    });
+                }
+                yield i.client.delete({
+                    where: { id }
+                });
+            }));
         });
     }
 }
