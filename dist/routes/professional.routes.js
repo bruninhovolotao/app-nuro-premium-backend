@@ -12,7 +12,9 @@ class professionalRoutes {
         router.get("/professional/search", controller.professionalSearch);
         router.get("/report/professional/:id", controller.professionalReport);
         router.get("/invoicing/professional/:id", controller.professionalInvoicing);
+        router.put("/professional/:id", auth_middleware_1.autenticarToken, controller.update);
         router.post("/professional", auth_middleware_1.autenticarToken, controller.create);
+        router.delete("/professional/:id", auth_middleware_1.autenticarToken, controller.delete);
         return router;
     }
 }

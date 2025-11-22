@@ -24,7 +24,6 @@ export class professionalService {
 
         return newProfessional;
     }
-
     public async list(): Promise<professionalListDTO[]> {
         
         const services = await prismaClient.professional.findMany({
@@ -37,7 +36,6 @@ export class professionalService {
             });
             return services;
     }
-
     public async professionalReport(professionalId: number, startDate?: string, endDate?: string) {
         const dateFilter = startDate && endDate ? {
           date: {
@@ -234,6 +232,58 @@ export class professionalService {
           totalServiceValue,
           totalProductValue,
         };
+    }
+    public async update(id: number, data: professionalDTO) {      
+      const professionalExists = await prismaClient.professional.findUnique({
+        where: { id }
+      });
+  
+      if (!professionalExists) {
+        throw new HTTPError(404, "Profissional não encontrado.");
+      }
+      const updatedProfessional = await prismaClient.professional.update({
+        where: { id },
+        data: {
+          name: data.name ?? professionalExists.name,
+          serviceCommission: data.serviceCommission ?? professionalExists.serviceCommission,
+          productCommission: data.productCommission ?? professionalExists.productCommission
+        }
+      });
+  
+      return updatedProfessional;
+    }
+    public async delete(id: number) {
+      
+      const professionalExists = await prismaClient.professional.findUnique({
+        where: { id }
+      });
+    
+      if (!professionalExists) {
+        throw new HTTPError(404, "Profissional não encontrado.");
+      }
+
+      await prismaClient.serviceItem.findMany({
+        where: { professionalId: id },
+        select: { id: true }
+      });
+
+      await prismaClient.productItem.findMany({
+        where: { professionalId: id },
+        select: { id: true }
+      });
+
+      await prismaClient.serviceItem.deleteMany({
+        where: { professionalId: id }
+      });
+
+      await prismaClient.productItem.deleteMany({
+        where: { professionalId: id }
+      })
+
+      await prismaClient.professional.delete({
+        where: { id: id }
+      })
+
     }
     
 }

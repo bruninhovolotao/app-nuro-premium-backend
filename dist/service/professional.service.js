@@ -221,5 +221,52 @@ class professionalService {
             };
         });
     }
+    update(id, data) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a, _b, _c;
+            const professionalExists = yield prisma_client_1.prismaClient.professional.findUnique({
+                where: { id }
+            });
+            if (!professionalExists) {
+                throw new http_error_1.HTTPError(404, "Profissional não encontrado.");
+            }
+            const updatedProfessional = yield prisma_client_1.prismaClient.professional.update({
+                where: { id },
+                data: {
+                    name: (_a = data.name) !== null && _a !== void 0 ? _a : professionalExists.name,
+                    serviceCommission: (_b = data.serviceCommission) !== null && _b !== void 0 ? _b : professionalExists.serviceCommission,
+                    productCommission: (_c = data.productCommission) !== null && _c !== void 0 ? _c : professionalExists.productCommission
+                }
+            });
+            return updatedProfessional;
+        });
+    }
+    delete(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const professionalExists = yield prisma_client_1.prismaClient.professional.findUnique({
+                where: { id }
+            });
+            if (!professionalExists) {
+                throw new http_error_1.HTTPError(404, "Profissional não encontrado.");
+            }
+            yield prisma_client_1.prismaClient.serviceItem.findMany({
+                where: { professionalId: id },
+                select: { id: true }
+            });
+            yield prisma_client_1.prismaClient.productItem.findMany({
+                where: { professionalId: id },
+                select: { id: true }
+            });
+            yield prisma_client_1.prismaClient.serviceItem.deleteMany({
+                where: { professionalId: id }
+            });
+            yield prisma_client_1.prismaClient.productItem.deleteMany({
+                where: { professionalId: id }
+            });
+            yield prisma_client_1.prismaClient.professional.delete({
+                where: { id: id }
+            });
+        });
+    }
 }
 exports.professionalService = professionalService;

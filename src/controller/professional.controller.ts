@@ -19,7 +19,6 @@ export class professionalController{
             return onError(error, res);
         }
     }
-
     public async list(req: Request, res: Response): Promise<void>{
             try {
             const service = new professionalService();
@@ -36,7 +35,6 @@ export class professionalController{
             onError(error, res)
             }
     }
-
     public async professionalSearch( req: Request, res: Response): Promise<void>{
         const { name } = req.query;
         
@@ -74,7 +72,6 @@ export class professionalController{
         onError(error, res)
         }    
     }
-
     public async professionalReport(req: Request, res: Response): Promise<void>{
     
           const professionalId = Number(req.params.id);
@@ -95,7 +92,6 @@ export class professionalController{
             onError(error, res)
           }
     }
-
     public async professionalInvoicing(req: Request, res: Response): Promise<void>{
     
           const professionalId = Number(req.params.id);
@@ -115,5 +111,50 @@ export class professionalController{
           } catch (error) {
             onError(error, res)
           }
+    }
+    public async update(req: Request, res: Response): Promise<void> {
+      try {
+        const id = parseInt(req.params.id, 10);
+        if (isNaN(id)) {
+            res.status(400).json({ message: "ID inválido." });
+        }
+  
+        const data = req.body;
+        
+        const service = new professionalService();
+        const updatedClient = await service.update(id, data);
+  
+        res.status(201).json({
+          sucess: true,
+          message: 'Profissional atualizado com sucesso',
+          data: updatedClient
+      })
+
+      } catch (error) {
+        return onError(error, res);
+      }
+    }
+    public async delete (req: Request, res: Response): Promise<void>{
+      try {
+        const id = parseInt(req.params.id, 10)
+
+        if(isNaN(id)){
+          res.status(400).json({
+            message: 'ID inválido'
+          })
+        }
+
+        const service = new professionalService();
+        const deletedClient = await service.delete(id);
+
+        res.status(200).json({
+          sucess: true,
+          message: 'Profissional deletado com sucesso',
+        })
+        
+      } catch (error) {
+        return onError(error, res);
+        
+      }
     }
 }

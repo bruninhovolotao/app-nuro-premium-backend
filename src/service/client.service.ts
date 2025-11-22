@@ -48,7 +48,6 @@ export class clientService {
       return clients;
     }
 
-    
     public async ClientReport(clientId: number, startDate?: string, endDate?: string) {
       const whereClause: any = {
         clientId,
@@ -102,7 +101,6 @@ export class clientService {
         })),
       }));
     }
-
 
     public async update(id: number, data: clientDTO) {
         

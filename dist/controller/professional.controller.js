@@ -119,5 +119,47 @@ class professionalController {
             }
         });
     }
+    update(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const id = parseInt(req.params.id, 10);
+                if (isNaN(id)) {
+                    res.status(400).json({ message: "ID inválido." });
+                }
+                const data = req.body;
+                const service = new professional_service_1.professionalService();
+                const updatedClient = yield service.update(id, data);
+                res.status(201).json({
+                    sucess: true,
+                    message: 'Profissional atualizado com sucesso',
+                    data: updatedClient
+                });
+            }
+            catch (error) {
+                return (0, on_error_1.onError)(error, res);
+            }
+        });
+    }
+    delete(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const id = parseInt(req.params.id, 10);
+                if (isNaN(id)) {
+                    res.status(400).json({
+                        message: 'ID inválido'
+                    });
+                }
+                const service = new professional_service_1.professionalService();
+                const deletedClient = yield service.delete(id);
+                res.status(200).json({
+                    sucess: true,
+                    message: 'Profissional deletado com sucesso',
+                });
+            }
+            catch (error) {
+                return (0, on_error_1.onError)(error, res);
+            }
+        });
+    }
 }
 exports.professionalController = professionalController;

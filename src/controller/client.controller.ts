@@ -19,7 +19,6 @@ export class clientController{
             return onError(error, res);
         }
     }
-
     public async list(req: Request, res: Response): Promise<void>{
       try {
         const service = new clientService();
@@ -36,7 +35,6 @@ export class clientController{
         onError(error, res)
       }
     }
-
     public async ClientSearch(req: Request, res: Response){
       const { name } = req.query;
 
@@ -74,7 +72,6 @@ export class clientController{
         onError(error, res)
       }
     }
-
     public async ClientReport(req: Request, res: Response): Promise<void>{
 
       const clientId = Number(req.params.id);
@@ -103,7 +100,6 @@ export class clientController{
         onError(error, res)
       }
     }
-
     public async update(req: Request, res: Response): Promise<void> {
         try {
           const id = parseInt(req.params.id, 10);
@@ -125,8 +121,7 @@ export class clientController{
         } catch (error) {
           return onError(error, res);
         }
-      }
-
+    }
     public async delete (req: Request, res: Response): Promise<void>{
       try {
         const id = parseInt(req.params.id, 10)
