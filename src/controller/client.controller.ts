@@ -57,6 +57,14 @@ export class clientController{
           },
         });
 
+        if (results.length === 0) {
+            res.status(404).json({
+                success: false,
+                message: "Nenhum cliente encontrado com esse nome.",
+                data: [],
+            });
+        }
+
         res.status(200).json({
           sucess: true,
           message: 'Cliente encontrado com sucesso',
