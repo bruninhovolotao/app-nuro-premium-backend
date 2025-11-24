@@ -1,18 +1,21 @@
 import { prismaClient } from "../database/prisma.client";
 
 export class InvoicingService {
-    public async invoicing(startDate?: string, endDate?: string) {
+    public async invoicing(startDate?: string, endDate?: string, unidade?: string) {
         const dateFilter = startDate && endDate ? {
           date: {
             gte: new Date(`${startDate}T00:00:00.000Z`),
             lte: new Date(`${endDate}T23:59:59.999Z`)
           }
         } : {};
+
+        const unidadeFilter = unidade ? { unidade } : {}
       
         // Busca todas as transações financeiras no período
         const transactions = await prismaClient.financialTransaction.findMany({
           where: {
             ...dateFilter,
+            ...unidadeFilter
           },
           select: {
             date: true,
@@ -48,6 +51,7 @@ export class InvoicingService {
         }
       
         return {
+          unidade: unidade || "Todas",
           periodo: {
             start: startDate || null,
             end: endDate || null,

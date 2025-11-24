@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.InvoicingService = void 0;
 const prisma_client_1 = require("../database/prisma.client");
 class InvoicingService {
-    invoicing(startDate, endDate) {
+    invoicing(startDate, endDate, unidade) {
         return __awaiter(this, void 0, void 0, function* () {
             const dateFilter = startDate && endDate ? {
                 date: {
@@ -20,9 +20,10 @@ class InvoicingService {
                     lte: new Date(`${endDate}T23:59:59.999Z`)
                 }
             } : {};
+            const unidadeFilter = unidade ? { unidade } : {};
             // Busca todas as transações financeiras no período
             const transactions = yield prisma_client_1.prismaClient.financialTransaction.findMany({
-                where: Object.assign({}, dateFilter),
+                where: Object.assign(Object.assign({}, dateFilter), unidadeFilter),
                 select: {
                     date: true,
                     paymentMethod: true,
@@ -54,6 +55,7 @@ class InvoicingService {
                 totals.geral += amount;
             }
             return {
+                unidade: unidade || "Todas",
                 periodo: {
                     start: startDate || null,
                     end: endDate || null,

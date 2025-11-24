@@ -15,10 +15,10 @@ const on_error_1 = require("../utils/on-error");
 class invoicingController {
     invoicing(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { startDate, endDate } = req.query;
+            const { startDate, endDate, unidade } = req.query;
             try {
                 const service = new invoicing_service_1.InvoicingService();
-                const report = yield service.invoicing(startDate, endDate);
+                const report = yield service.invoicing(startDate, endDate, unidade ? String(unidade) : undefined);
                 res.status(200).json({
                     sucess: true,
                     message: 'Dados de faturamento carregados com sucesso',

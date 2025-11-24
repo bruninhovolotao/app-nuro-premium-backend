@@ -4,12 +4,12 @@ import { onError } from "../utils/on-error";
 
 export class invoicingController{
     public async invoicing(req: Request, res: Response){
-        const { startDate, endDate } = req.query;
+        const { startDate, endDate, unidade } = req.query;
 
         try {
         const service = new InvoicingService();
 
-        const report = await service.invoicing(startDate as string, endDate as string);
+        const report = await service.invoicing(startDate as string, endDate as string, unidade ? String(unidade) : undefined);
         
         res.status(200).json({
             sucess: true,

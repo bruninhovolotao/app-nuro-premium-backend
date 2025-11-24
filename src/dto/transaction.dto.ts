@@ -4,6 +4,7 @@ export interface TransitionsDTO {
   totalAmount: string;
   paymentMethod: string;
   notes?: string;
+  unidade: string;
   clientName: string;
   transactionDate: string;
 

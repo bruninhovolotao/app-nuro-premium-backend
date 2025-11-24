@@ -77,13 +77,17 @@ class transactionService {
             const servicesTotal = services.reduce((acc, p) => acc.add(p.price), new client_1.Prisma.Decimal(0));
             const productsTotal = products.reduce((acc, p) => acc.add(p.price), new client_1.Prisma.Decimal(0));
             const totalAmount = new client_1.Prisma.Decimal(servicesTotal).add(productsTotal);
+            // Acerta o fuso horário
+            const dataNow = new Date();
+            dataNow.setHours(dataNow.getHours() - 3);
             // Criação da transação financeira
             const transaction = yield prisma_client_1.prismaClient.financialTransaction.create({
                 data: {
-                    date: new Date(dto.transactionDate),
+                    date: dataNow,
                     totalAmount,
                     paymentMethod: dto.paymentMethod,
                     notes: dto.notes,
+                    unidade: dto.unidade,
                     clientId: client.id,
                     serviceItems: {
                         create: services.map((s) => ({
