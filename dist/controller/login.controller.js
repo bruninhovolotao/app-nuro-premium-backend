@@ -46,5 +46,66 @@ class loginController {
             }
         });
     }
+    list(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const userId = Number(req.params.id);
+            try {
+                const service = new login_service_1.loginService();
+                const list = yield service.list(userId);
+                res.status(200).json({
+                    sucess: true,
+                    message: "Dados do usuário carregado com sucesso",
+                    dados: list
+                });
+            }
+            catch (error) {
+                (0, on_error_1.onError)(error, res);
+            }
+        });
+    }
+    update(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const id = parseInt(req.params.id, 10);
+                if (isNaN(id)) {
+                    res.status(400).json({ message: "ID inválido." });
+                    return;
+                }
+                const { name, email, username, password } = req.body;
+                const service = new login_service_1.loginService();
+                const updateUser = yield service.update({ id, name, email, username, password });
+                res.status(200).json({
+                    sucess: true,
+                    message: "Usuário atualizado com sucesso",
+                    dados: updateUser
+                });
+            }
+            catch (error) {
+                (0, on_error_1.onError)(error, res);
+            }
+        });
+    }
+    delete(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const id = parseInt(req.params.id, 10);
+                if (isNaN(id)) {
+                    res.status(400).json({
+                        message: 'ID inválido'
+                    });
+                }
+                const service = new login_service_1.loginService();
+                const results = yield service.delete(id);
+                res.status(201).json({
+                    sucess: true,
+                    message: "Usuário deletado com sucesso",
+                    dados: results
+                });
+            }
+            catch (error) {
+                (0, on_error_1.onError)(error, res);
+            }
+        });
+    }
 }
 exports.loginController = loginController;

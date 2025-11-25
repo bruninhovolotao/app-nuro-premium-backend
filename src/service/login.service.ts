@@ -1,6 +1,6 @@
 import { prismaClient } from "../database/prisma.client";
 import { User, Tipo  } from "@prisma/client"
-import { loginDTO, userDTO } from "../dto/login.dto";
+import { loginDTO, userDTO, userUpdateDTO } from "../dto/login.dto";
 import bcrypt from "bcrypt";
 import { randomUUID } from "crypto";
 import { HTTPError } from "../utils/http.error";
@@ -35,7 +35,20 @@ export class loginService {
         const { password: _, ...userPartial } = newUser;
         return userPartial;
     }
+    public async list(userId: number) {
+        const user = await prismaClient.user.findMany({
+            where: { id: userId },
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                username: true,
+                password: true
+            }
+        })
 
+        return user
+    }
     public async login(data: loginDTO): Promise< {token: string, user: object} > {
         const { username, password } = data
 
@@ -65,12 +78,46 @@ export class loginService {
         return { user: usuarioSemSenha, token}
 
     }
-
     public async getByToken(authToken: string): Promise<Omit<User, "password"> | null>{
         const user = await prismaClient.user.findFirst({
             where:{ authToken },
         });
 
         return user;
+    }
+    public async update({id, name, email, username, password}: userUpdateDTO){
+        
+        const dataUpdate: any = {};
+
+        if(name !== undefined) dataUpdate.name = name
+        if(email !== undefined) dataUpdate.email = email
+        if(username !== undefined) dataUpdate.username = username
+
+        if(password){
+            const passwordCripted = await bcrypt.hash(password, 10);
+            dataUpdate.password = passwordCripted
+        }
+
+        const updateUser = await prismaClient.user.update({
+            where: { id },
+            data: dataUpdate
+        })
+
+        const { password: _, ...userPartial } = updateUser;
+        return userPartial;
+    }
+    public async delete(id: number) {
+      
+      const userExists = await prismaClient.user.findUnique({
+          where: { id }
+        });
+    
+        if (!userExists) {
+          throw new HTTPError(404, "Usuário não encontrado.");
+        }
+
+        await prismaClient.user.delete({
+            where: userExists
+        })
     }
 }

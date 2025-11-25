@@ -8,6 +8,9 @@ export class loginRoutes{
 
         router.post("/signup", controller.signup);
         router.post("/login", controller.login);
+        router.get("/usuario/:id", controller.list);
+        router.put("/usuario/:id", controller.update);
+        router.delete("/usuario/:id", controller.delete);
 
         return router
     }

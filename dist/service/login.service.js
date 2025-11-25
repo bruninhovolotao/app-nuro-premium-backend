@@ -53,6 +53,21 @@ class loginService {
             return userPartial;
         });
     }
+    list(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = yield prisma_client_1.prismaClient.user.findMany({
+                where: { id: userId },
+                select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                    username: true,
+                    password: true
+                }
+            });
+            return user;
+        });
+    }
     login(data) {
         return __awaiter(this, void 0, void 0, function* () {
             const { username, password } = data;
@@ -81,6 +96,40 @@ class loginService {
                 where: { authToken },
             });
             return user;
+        });
+    }
+    update(_a) {
+        return __awaiter(this, arguments, void 0, function* ({ id, name, email, username, password }) {
+            const dataUpdate = {};
+            if (name !== undefined)
+                dataUpdate.name = name;
+            if (email !== undefined)
+                dataUpdate.email = email;
+            if (username !== undefined)
+                dataUpdate.username = username;
+            if (password) {
+                const passwordCripted = yield bcrypt_1.default.hash(password, 10);
+                dataUpdate.password = passwordCripted;
+            }
+            const updateUser = yield prisma_client_1.prismaClient.user.update({
+                where: { id },
+                data: dataUpdate
+            });
+            const { password: _ } = updateUser, userPartial = __rest(updateUser, ["password"]);
+            return userPartial;
+        });
+    }
+    delete(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const userExists = yield prisma_client_1.prismaClient.user.findUnique({
+                where: { id }
+            });
+            if (!userExists) {
+                throw new http_error_1.HTTPError(404, "Usuário não encontrado.");
+            }
+            yield prisma_client_1.prismaClient.user.delete({
+                where: userExists
+            });
         });
     }
 }
