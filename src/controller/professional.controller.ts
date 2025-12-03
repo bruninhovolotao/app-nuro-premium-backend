@@ -75,12 +75,12 @@ export class professionalController{
     public async professionalReport(req: Request, res: Response): Promise<void>{
     
           const professionalId = Number(req.params.id);
-          const { startDate, endDate } = req.query;
+          const { unidade, startDate, endDate } = req.query;
     
           try {
             const service = new professionalService();
     
-            const report = await service.professionalReport(professionalId, startDate as string, endDate as string);
+            const report = await service.professionalReport(professionalId, unidade as string, startDate as string, endDate as string);
             
             res.status(200).json({
               sucess: true,

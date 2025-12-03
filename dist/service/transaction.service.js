@@ -13,6 +13,7 @@ exports.transactionService = void 0;
 const client_1 = require("@prisma/client");
 const prisma_client_1 = require("../database/prisma.client");
 const http_error_1 = require("../utils/http.error");
+const library_1 = require("@prisma/client/runtime/library");
 class transactionService {
     create(dto) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -113,6 +114,63 @@ class transactionService {
                 }
             });
             return transaction;
+        });
+    }
+    TransactionsReport(clientId, startDate, endDate) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const whereClause = {
+                clientId,
+            };
+            if (startDate && endDate) {
+                whereClause.date = {
+                    gte: new Date(`${startDate}T00:00:00.000Z`),
+                    lte: new Date(`${endDate}T23:59:59.999Z`),
+                };
+            }
+            const transactions = yield prisma_client_1.prismaClient.financialTransaction.findMany({
+                where: whereClause,
+                orderBy: {
+                    date: "desc",
+                },
+                include: {
+                    client: true,
+                    serviceItems: {
+                        include: {
+                            professional: true
+                        }
+                    },
+                    productItems: {
+                        include: {
+                            professional: true
+                        },
+                    },
+                }
+            });
+            return transactions.map((t) => ({
+                id: t.id,
+                dataAtendimento: t.date,
+                metodoPagamento: t.paymentMethod,
+                valorTotal: t.totalAmount,
+                observacoes: t.notes,
+                servicos: t.serviceItems.map((s) => ({
+                    nome: s.name,
+                    quantidade: s.quantity,
+                    valorUnitario: s.price,
+                    profissional: s.professional.name,
+                    total: new library_1.Decimal(s.price).mul(s.quantity),
+                })),
+                produtos: t.productItems.map((p) => ({
+                    nome: p.name,
+                    quantidade: p.quantity,
+                    valorUnitario: p.price,
+                    profissional: p.professional.name,
+                    total: new library_1.Decimal(p.price).mul(p.quantity),
+                })),
+            }));
+        });
+    }
+    update(id, dto, startDate, endDate) {
+        return __awaiter(this, void 0, void 0, function* () {
         });
     }
 }

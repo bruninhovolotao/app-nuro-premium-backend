@@ -46,7 +46,7 @@ class professionalService {
             return services;
         });
     }
-    professionalReport(professionalId, startDate, endDate) {
+    professionalReport(professionalId, unidade, startDate, endDate) {
         return __awaiter(this, void 0, void 0, function* () {
             const dateFilter = startDate && endDate ? {
                 date: {
@@ -63,7 +63,7 @@ class professionalService {
             }
             // Busca todas as transações de serviços financeiras no período
             const transactions = yield prisma_client_1.prismaClient.financialTransaction.findMany({
-                where: Object.assign(Object.assign({}, dateFilter), { OR: [
+                where: Object.assign(Object.assign({ unidade }, dateFilter), { OR: [
                         { serviceItems: { some: { professionalId } } },
                         { productItems: { some: { professionalId } } }
                     ] }),
@@ -108,6 +108,7 @@ class professionalService {
                     id: professional.id,
                     name: professional.name,
                 },
+                unidade: unidade,
                 periodo: {
                     start: startDate || null,
                     end: endDate || null,

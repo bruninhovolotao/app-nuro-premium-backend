@@ -36,7 +36,7 @@ export class professionalService {
             });
             return services;
     }
-    public async professionalReport(professionalId: number, startDate?: string, endDate?: string) {
+    public async professionalReport(professionalId: number, unidade: string, startDate?: string, endDate?: string) {
         const dateFilter = startDate && endDate ? {
           date: {
             gte: new Date(`${startDate}T00:00:00.000Z`),
@@ -56,6 +56,7 @@ export class professionalService {
         // Busca todas as transações de serviços financeiras no período
         const transactions = await prismaClient.financialTransaction.findMany({
           where: {
+            unidade,
             ...dateFilter,
             OR: [
                   { serviceItems: { some: { professionalId } } },
@@ -110,6 +111,7 @@ export class professionalService {
             id: professional.id,
             name: professional.name,
           },
+          unidade: unidade,
           periodo: {
             start: startDate || null,
             end: endDate || null,

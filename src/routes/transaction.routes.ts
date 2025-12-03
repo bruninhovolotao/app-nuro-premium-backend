@@ -8,6 +8,9 @@ export class transactionRoutes{
         const controller = new transitionsController();
 
         router.post("/transactions", autenticarToken, controller.create);
+        router.get("/transactions/search", controller.TransactionsSearch);
+        router.get("/transactions/client/:id", controller.TransactionsReport);
+        router.put("/transactions/:id", controller.update);
 
         return router
     }

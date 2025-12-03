@@ -86,10 +86,10 @@ class professionalController {
     professionalReport(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const professionalId = Number(req.params.id);
-            const { startDate, endDate } = req.query;
+            const { unidade, startDate, endDate } = req.query;
             try {
                 const service = new professional_service_1.professionalService();
-                const report = yield service.professionalReport(professionalId, startDate, endDate);
+                const report = yield service.professionalReport(professionalId, unidade, startDate, endDate);
                 res.status(200).json({
                     sucess: true,
                     message: 'Dados do Profissional carregados com sucesso',
