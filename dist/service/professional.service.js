@@ -72,6 +72,9 @@ class professionalService {
                     productItems: true
                 }
             });
+            if (transactions.length === 0) {
+                throw new Error('Nenhum registro encontrado para o período selecionado.');
+            }
             // Agrupamento e cálculos
             let totalServices = 0;
             let totalServiceValue = 0;

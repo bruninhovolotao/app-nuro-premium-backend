@@ -52,7 +52,7 @@ export class professionalService {
         if (!professional) {
           throw new Error('Profissional não encontrado');
         }
-      
+
         // Busca todas as transações de serviços financeiras no período
         const transactions = await prismaClient.financialTransaction.findMany({
           where: {
@@ -68,6 +68,10 @@ export class professionalService {
                 productItems: true
           }
         });
+
+        if (transactions.length === 0) {
+            throw new Error('Nenhum registro encontrado para o período selecionado.');
+        }
       
         // Agrupamento e cálculos
         let totalServices = 0;
