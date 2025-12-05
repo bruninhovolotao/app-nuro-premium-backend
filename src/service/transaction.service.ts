@@ -171,9 +171,6 @@ export class transactionService {
             total: new Decimal(p.price).mul(p.quantity),
           })),
         }));
-  }
-  public async update(id: number, dto: TransitionsDTO, startDate?: string, endDate?: string) {
-    
   }   
     
 }

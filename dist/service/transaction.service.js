@@ -169,9 +169,5 @@ class transactionService {
             }));
         });
     }
-    update(id, dto, startDate, endDate) {
-        return __awaiter(this, void 0, void 0, function* () {
-        });
-    }
 }
 exports.transactionService = transactionService;

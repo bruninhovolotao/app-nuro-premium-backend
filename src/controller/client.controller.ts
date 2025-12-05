@@ -55,14 +55,6 @@ export class clientController{
           },
         });
 
-        if (results.length === 0) {
-            res.status(404).json({
-                success: false,
-                message: "Nenhum cliente encontrado com esse nome.",
-                data: [],
-            });
-        }
-
         res.status(200).json({
           sucess: true,
           message: 'Cliente encontrado com sucesso',
@@ -81,14 +73,6 @@ export class clientController{
         const service = new clientService();
 
         const report = await service.ClientReport(clientId, startDate as string, endDate as string);
-
-        if (report.length === 0) {
-           res.status(404).json({
-            success: false,
-            message: 'Este cliente ainda não possui transações registradas.',
-            data: [],
-          });
-        }
         
         res.status(200).json({
           sucess: true,
@@ -103,12 +87,8 @@ export class clientController{
     public async update(req: Request, res: Response): Promise<void> {
         try {
           const id = parseInt(req.params.id, 10);
-          if (isNaN(id)) {
-             res.status(400).json({ message: "ID inválido." });
-          }
     
           const data = req.body;
-          
           const service = new clientService();
           const updatedClient = await service.update(id, data);
     
@@ -125,12 +105,6 @@ export class clientController{
     public async delete (req: Request, res: Response): Promise<void>{
       try {
         const id = parseInt(req.params.id, 10)
-
-        if(isNaN(id)){
-          res.status(400).json({
-            message: 'ID inválido'
-          })
-        }
 
         const service = new clientService();
         const deletedClient = await service.delete(id);

@@ -65,13 +65,6 @@ class clientController {
                         name: 'asc',
                     },
                 });
-                if (results.length === 0) {
-                    res.status(404).json({
-                        success: false,
-                        message: "Nenhum cliente encontrado com esse nome.",
-                        data: [],
-                    });
-                }
                 res.status(200).json({
                     sucess: true,
                     message: 'Cliente encontrado com sucesso',
@@ -90,13 +83,6 @@ class clientController {
             try {
                 const service = new client_service_1.clientService();
                 const report = yield service.ClientReport(clientId, startDate, endDate);
-                if (report.length === 0) {
-                    res.status(404).json({
-                        success: false,
-                        message: 'Este cliente ainda não possui transações registradas.',
-                        data: [],
-                    });
-                }
                 res.status(200).json({
                     sucess: true,
                     message: 'Dados do Cliente carregados com sucesso',
@@ -112,9 +98,6 @@ class clientController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const id = parseInt(req.params.id, 10);
-                if (isNaN(id)) {
-                    res.status(400).json({ message: "ID inválido." });
-                }
                 const data = req.body;
                 const service = new client_service_1.clientService();
                 const updatedClient = yield service.update(id, data);
@@ -133,11 +116,6 @@ class clientController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const id = parseInt(req.params.id, 10);
-                if (isNaN(id)) {
-                    res.status(400).json({
-                        message: 'ID inválido'
-                    });
-                }
                 const service = new client_service_1.clientService();
                 const deletedClient = yield service.delete(id);
                 res.status(200).json({

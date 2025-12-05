@@ -1,7 +1,6 @@
 import { Router } from 'express';
 import { clientController } from '../controller/client.controller';
 import { autenticarToken } from '../middleware/auth.middleware';
-import { ensureTipo } from '../middleware/ensureRole';
 
 export class clientRoutes{
     public static bind(): Router{
