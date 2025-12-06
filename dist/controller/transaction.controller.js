@@ -17,7 +17,9 @@ class transitionsController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const service = new transaction_service_1.transactionService();
-                const results = yield service.create(req.body);
+                const user = req.user;
+                const createdByUser = user === null || user === void 0 ? void 0 : user.name;
+                const results = yield service.create(req.body, createdByUser);
                 res.status(201).json({
                     sucess: true,
                     message: 'Lançamento gerado com sucesso',

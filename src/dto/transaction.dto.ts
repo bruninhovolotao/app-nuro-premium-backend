@@ -7,6 +7,7 @@ export interface TransitionsDTO {
   unidade: string;
   clientName: string;
   transactionDate: string;
+  createdByUser: string;
 
   services: TransactionServiceDTO[];
   products?: TransactionProductDTO[];

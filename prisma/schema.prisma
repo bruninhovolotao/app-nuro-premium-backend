@@ -1,16 +1,10 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
-  url = env("DATABASE_URL")
+  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -40,32 +34,30 @@ model Client {
 model Professional {
   id                Int           @id @default(autoincrement())
   name              String        @db.VarChar(50)
-  serviceCommission Decimal       @default(0.00) @db.Decimal(5, 2) // 0.00 a 100.00 (%)
-  productCommission Decimal       @default(0.00) @db.Decimal(5, 2) // 0.00 a 100.00 (%)
+  serviceCommission Decimal       @default(0.00) @db.Decimal(5, 2)
+  productCommission Decimal       @default(0.00) @db.Decimal(5, 2)
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt
-  serviceItems      ServiceItem[]
   productItems      ProductItem[]
+  serviceItems      ServiceItem[]
 
   @@map("professional")
 }
 
 model FinancialTransaction {
-  id            Int      @id @default(autoincrement())
-  date          DateTime @default(now())
-  totalAmount   Decimal  @default(0.00) @db.Decimal(10, 2)
-  paymentMethod String   @db.VarChar(50)
-  notes         String?  @db.VarChar(255)
-  unidade       String?  @db.VarChar(255)
-
-  clientId Int
-  client   Client @relation(fields: [clientId], references: [id])
-
-  serviceItems ServiceItem[]
-  productItems ProductItem[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            Int           @id @default(autoincrement())
+  date          DateTime      @default(now())
+  totalAmount   Decimal       @default(0.00) @db.Decimal(10, 2)
+  paymentMethod String        @db.VarChar(50)
+  notes         String?       @db.VarChar(255)
+  clientId      Int
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  unidade       String?       @db.VarChar(255)
+  createdbyuser String?       @db.VarChar(255)
+  productItems  ProductItem[]
+  serviceItems  ServiceItem[]
+  client        Client        @relation(fields: [clientId], references: [id])
 
   @@map("financial_transaction")
 }
@@ -74,22 +66,22 @@ model ServiceItem {
   id                     Int                  @id @default(autoincrement())
   name                   String
   price                  Decimal              @db.Decimal(10, 2)
-  quantity               Int      @default(1) 
+  quantity               Int                  @default(1)
   professionalId         Int
-  professional           Professional         @relation(fields: [professionalId], references: [id])
   financialTransactionId Int
   financialTransaction   FinancialTransaction @relation(fields: [financialTransactionId], references: [id])
+  professional           Professional         @relation(fields: [professionalId], references: [id])
 }
 
 model ProductItem {
   id                     Int                  @id @default(autoincrement())
   name                   String
   price                  Decimal              @db.Decimal(10, 2)
-  quantity               Int      @default(1) 
+  quantity               Int                  @default(1)
   professionalId         Int
-  professional           Professional         @relation(fields: [professionalId], references: [id])
   financialTransactionId Int
   financialTransaction   FinancialTransaction @relation(fields: [financialTransactionId], references: [id])
+  professional           Professional         @relation(fields: [professionalId], references: [id])
 }
 
 enum Tipo {

@@ -15,7 +15,7 @@ const prisma_client_1 = require("../database/prisma.client");
 const http_error_1 = require("../utils/http.error");
 const library_1 = require("@prisma/client/runtime/library");
 class transactionService {
-    create(dto) {
+    create(dto, createdByUser) {
         return __awaiter(this, void 0, void 0, function* () {
             // Validação do cliente
             const client = yield prisma_client_1.prismaClient.client.findFirst({
@@ -90,6 +90,7 @@ class transactionService {
                     notes: dto.notes,
                     unidade: dto.unidade,
                     clientId: client.id,
+                    createdbyuser: createdByUser,
                     serviceItems: {
                         create: services.map((s) => ({
                             name: s.name,

@@ -5,7 +5,7 @@ import { HTTPError } from "../utils/http.error";
 import { Decimal } from "@prisma/client/runtime/library";
 
 export class transactionService {
-  public async create(dto: TransitionsDTO): Promise<FinancialTransaction> {
+  public async create(dto: TransitionsDTO, createdByUser?: string): Promise<FinancialTransaction> {
     // Validação do cliente
     const client = await prismaClient.client.findFirst({
       where: { name: dto.clientName },
@@ -93,6 +93,7 @@ export class transactionService {
         notes: dto.notes,
         unidade: dto.unidade,
         clientId: client.id,
+        createdbyuser: createdByUser,
         serviceItems: {
           create: services.map((s) => ({
             name: s.name,

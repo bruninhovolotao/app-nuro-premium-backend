@@ -7,7 +7,9 @@ export class transitionsController{
     public async create(req: Request, res: Response){
         try {
             const service = new transactionService();
-            const results = await service.create(req.body);
+            const user = req.user as {id: number, name: string, email: string, username: string, tipo: string}
+            const createdByUser = user?.name
+            const results = await service.create(req.body, createdByUser);
 
              res.status(201).json({
                 sucess: true,
