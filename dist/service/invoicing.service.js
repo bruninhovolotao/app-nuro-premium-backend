@@ -39,6 +39,7 @@ class InvoicingService {
                 pix: 0,
                 presente: 0,
                 despesa: 0,
+                stone: 0,
                 geral: 0,
             };
             for (const t of transactions) {
@@ -52,6 +53,8 @@ class InvoicingService {
                     totals.presente += amount;
                 else if (method.includes("despesa"))
                     totals.despesa += amount;
+                else if (method.includes("stone"))
+                    totals.stone += amount;
                 totals.geral += amount;
             }
             return {

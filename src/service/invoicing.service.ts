@@ -34,6 +34,7 @@ export class InvoicingService {
             pix: 0,
             presente: 0,
             despesa: 0,
+            stone: 0,
             geral: 0,
         };
         
@@ -46,6 +47,7 @@ export class InvoicingService {
             else if (method.includes("pix") || method.includes("pix")) totals.pix += amount;
             else if (method.includes("presente") || method.includes("presente")) totals.presente += amount;
             else if (method.includes("despesa")) totals.despesa += amount;
+            else if (method.includes("stone")) totals.stone += amount;
 
             totals.geral += amount;
         }
